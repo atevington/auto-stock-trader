@@ -32,16 +32,17 @@ app.post("/inbound-parse/place-stock-order/:source", (req, res) => {
 	const source = req.params.source
 	const moves = emailParser[source] ? emailParser[source](dom) : []
 	const orderNotificationConfig = Object.assign({}, notificationConfig, {text: JSON.stringify({source, moves, html}, null, 2)})
-	const onOrdersDone = () => {
-		res.status(200).send({status: "Processing is complete."})
-	}
-	
+
 	Promise.resolve()
 		.then(() => sendEmail(orderNotificationConfig))
 		.then(() => {
 			Promise.all(moves.map(move => move.isBuy ? rhUtils.buyAtMarketByTarget(rhAPI, move.symbol, purchaseTarget) : rhUtils.sellAllAtMarket(rhAPI, move.symbol)))
-				.then(onOrdersDone)
-				.catch(onOrdersDone)
+				.then(() => {
+					res.status(200).send({status: "Processing is complete."})
+				})
+				.catch(() => {
+					res.status(406).send({error: "Some orders could not be processed."})
+				})
 		})
 		.catch(() => {
 			res.status(500).send({error: "Error sending order notification."})
