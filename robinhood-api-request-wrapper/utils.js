@@ -84,11 +84,7 @@ const getPositionForSymbol = (api, symbol) => (
 				return account.$positions()
 			})
 			.then(response => {
-				const position = response.results.filter(result => (
-					result.instrument === instrument.url
-				))[0] || null
-				
-				resolve(position)
+				resolve(response.results.filter(result => result.instrument === instrument.url)[0] || null)
 			})
 			.catch(reject)
 	})
