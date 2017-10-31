@@ -1,0 +1,22 @@
+{
+  "name": "auto-stock-trader",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.18.2",
+    "dotenv": "^4.0.0",
+    "express": "^4.16.2",
+    "jquery": "^3.2.1",
+    "jsdom": "^11.3.0",
+    "lodash": "^4.17.4",
+    "mailgun-js": "^0.13.1",
+    "node-windows": "^0.1.14",
+    "request": "^2.83.0"
+  }
+}
