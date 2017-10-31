@@ -3,9 +3,7 @@ const getFirstActiveAccount = (api) => (
 		Promise.resolve()
 			.then(() => api.getAccounts())
 			.then(response => {
-				const account = response.results.filter(result => (
-					!result.deactivated
-				))[0] || null
+				const account = response.results.filter(result => !result.deactivated)[0] || null
 				
 				if (account) {
 					resolve(account)
@@ -22,9 +20,7 @@ const getInstrument = (api, symbol) => (
 		Promise.resolve()
 			.then(() => api.searchInstruments(symbol))
 			.then(response => {
-				const instrument = response.results.filter(result => (
-					result.symbol === symbol
-				))[0] || null
+				const instrument = response.results.filter(result => result.symbol === symbol)[0] || null
 				
 				if (instrument) {
 					resolve(instrument)
@@ -130,11 +126,11 @@ const buyAtMarketByTarget = (api, symbol, purchaseTarget) => (
 	new Promise((resolve, reject) => {
 		Promise.resolve()
 			.then(() => api.getQuote(symbol))
-			.then(quote => placeOrderAtMarket(
-				api,
-				symbol,
-				parseFloat(quote.ask_price) === 0 ? 0 : (Math.round(purchaseTarget / parseFloat(quote.ask_price)) || 1)
-			))
+			.then(quote => {
+				const buyPrice = Math.max(parseFloat(quote.ask_price), parseFloat(quote.last_trade_price))
+				
+				return placeOrderAtMarket(api, symbol, buyPrice === 0 ? 0 : (Math.round(purchaseTarget / buyPrice) || 1))
+			})
 			.then(status => {
 				resolve(status)
 			})
