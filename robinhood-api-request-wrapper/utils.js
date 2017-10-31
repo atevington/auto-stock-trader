@@ -53,6 +53,8 @@ const getMarketOrderConfig = (api, symbol, quantity) => (
 				return api.getQuote(symbol)
 			})
 			.then(quote => {
+				const ask = parseFloat(quote.ask_price), bid = parseFloat(quote.bid_price), last = parseFloat(quote.last_trade_price)
+				
 				resolve({
 					account: account.url,
 					instrument: instrument.url,
@@ -60,7 +62,7 @@ const getMarketOrderConfig = (api, symbol, quantity) => (
 					type: "market",
 					time_in_force: "gfd",
 					trigger: "immediate",
-					price: parseFloat(quantity > 0 ? quote.ask_price : quote.bid_price),
+					price: quantity > 0 ? Math.max(ask, last) : Math.min(bid, last),
 					quantity: Math.abs(quantity),
 					side: quantity > 0 ? "buy" : "sell"
 				})
