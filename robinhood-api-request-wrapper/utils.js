@@ -58,7 +58,7 @@ const getMarketOrderConfig = (api, symbol, quantity) => (
 					type: "market",
 					time_in_force: "gfd",
 					trigger: "immediate",
-					price: quantity > 0 ? Math.max(ask, last) : Math.min(bid, last),
+					price: Math.round((quantity > 0 ? Math.max(ask, last) : Math.min(bid, last)) * 100) / 100,
 					quantity: Math.abs(quantity),
 					side: quantity > 0 ? "buy" : "sell"
 				})
