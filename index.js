@@ -16,9 +16,12 @@ const bodyParser = require("body-parser")
 const express = require("express")
 const app = express()
 
-rhUtils.setLogger((data, done) => {
+rhUtils.setOrderLogger((data, done) => {
 	const orderNotificationConfig = Object.assign({}, notificationConfig, {text: JSON.stringify(data, null, 2)})
-	sendEmail(orderNotificationConfig).then(done).catch(done)
+	
+	sendEmail(orderNotificationConfig)
+		.then(done)
+		.catch(done)
 })
 
 app.set("etag", false)

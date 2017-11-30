@@ -1,15 +1,15 @@
-const defaultLogger = (data, done) => done()
+const defaultOrderLogger = (data, done) => done()
 
-let currentLogger = defaultLogger
+let currentOrderLogger = defaultOrderLogger
 
-const invokeLogger = data => (
+const invokeOrderLogger = data => (
 	new Promise((resolve, reject) => {
-		currentLogger(data, () => resolve(data))
+		currentOrderLogger(data, () => resolve(data))
 	})
 )
 
-const setLogger = logger => {
-	currentLogger = logger
+const setOrderLogger = orderLogger => {
+	currentOrderLogger = orderLogger
 }
 
 const getFirstActiveAccount = (api) => (
@@ -108,9 +108,9 @@ const placeOrderAtMarket = (api, symbol, quantity) => (
 	new Promise((resolve, reject) => {
 		Promise.resolve()
 			.then(() => getMarketOrderConfig(api, symbol, quantity))
-			.then(config => invokeLogger(config))
+			.then(config => invokeOrderLogger(config))
 			.then(config => api.placeOrder(config))
-			.then(orderResponse => invokeLogger(orderResponse))
+			.then(orderResponse => invokeOrderLogger(orderResponse))
 			.then(orderResponse => {
 				resolve(orderResponse)
 			})
@@ -147,7 +147,7 @@ const buyAtMarketByTarget = (api, symbol, purchaseTarget) => (
 )
 
 module.exports = {
-	setLogger,
+	setOrderLogger,
 	getFirstActiveAccount,
 	getInstrument,
 	getMarketOrderConfig,
