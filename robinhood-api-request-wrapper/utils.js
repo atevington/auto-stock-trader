@@ -111,10 +111,8 @@ const placeOrderAtMarket = (api, symbol, quantity) => (
 			.then(config => invokeOrderLogger(config))
 			.then(config => api.placeOrder(config))
 			.then(orderResponse => invokeOrderLogger(orderResponse))
-			.then(orderResponse => {
-				resolve(orderResponse)
-			})
-			.catch(reject)
+			.then(orderResponse => resolve(orderResponse))
+			.catch(error => invokeOrderLogger(error).then(error => reject(error)))
 	})
 )
 
