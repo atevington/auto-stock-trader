@@ -16,6 +16,11 @@ const bodyParser = require("body-parser")
 const express = require("express")
 const app = express()
 
+rhUtils.setLogger((data, done) => {
+	const orderNotificationConfig = Object.assign({}, notificationConfig, {text: JSON.stringify(data, null, 2)})
+	sendEmail(orderNotificationConfig).then(done).catch(done)
+})
+
 app.set("etag", false)
 
 app.post("/inbound-parse/*", bodyParser.urlencoded({extended: false}), (req, res, next) => {
@@ -31,10 +36,8 @@ app.post("/inbound-parse/place-stock-order/:source", (req, res) => {
 	const dom = jqDOM(html)
 	const source = req.params.source
 	const moves = emailParser[source] ? emailParser[source](dom) : []
-	const orderNotificationConfig = Object.assign({}, notificationConfig, {text: JSON.stringify({source, moves, html}, null, 2)})
 
 	Promise.resolve()
-		.then(() => sendEmail(orderNotificationConfig))
 		.then(() => {
 			Promise.all(moves.map(move => move.isBuy ? rhUtils.buyAtMarketByTarget(rhAPI, move.symbol, purchaseTarget) : rhUtils.sellAllAtMarket(rhAPI, move.symbol)))
 				.then(() => {

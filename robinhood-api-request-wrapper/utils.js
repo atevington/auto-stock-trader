@@ -1,3 +1,17 @@
+const defaultLogger = (data, done) => done()
+
+let currentLogger = defaultLogger
+
+const invokeLogger = data => (
+	new Promise((resolve, reject) => {
+		currentLogger(data, () => resolve(data))
+	})
+)
+
+const setLogger = logger => {
+	currentLogger = logger
+}
+
 const getFirstActiveAccount = (api) => (
 	new Promise((resolve, reject) => {
 		Promise.resolve()
@@ -92,17 +106,15 @@ const getPositionForSymbol = (api, symbol) => (
 
 const placeOrderAtMarket = (api, symbol, quantity) => (
 	new Promise((resolve, reject) => {
-		if (quantity !== 0) {
-			Promise.resolve()
-				.then(() => getMarketOrderConfig(api, symbol, quantity))
-				.then(config => api.placeOrder(config))
-				.then(status => {
-					resolve(status)
-				})
-				.catch(reject)	
-		} else {
-			reject({error: "Quantity must be non-zero."})
-		}
+		Promise.resolve()
+			.then(() => getMarketOrderConfig(api, symbol, quantity))
+			.then(config => invokeLogger(config))
+			.then(config => api.placeOrder(config))
+			.then(orderResponse => invokeLogger(orderResponse))
+			.then(orderResponse => {
+				resolve(orderResponse)
+			})
+			.catch(reject)
 	})
 )
 
@@ -135,6 +147,7 @@ const buyAtMarketByTarget = (api, symbol, purchaseTarget) => (
 )
 
 module.exports = {
+	setLogger,
 	getFirstActiveAccount,
 	getInstrument,
 	getMarketOrderConfig,
