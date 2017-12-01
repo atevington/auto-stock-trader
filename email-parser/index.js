@@ -38,7 +38,6 @@ const marketVulture = (dom) => {
 	dom("td:contains('Stock Picks')").each((index, elem) => {
 		const message = dom(elem).next().text().toLowerCase()
 		const foundTextQuery = textQueries.filter(textQuery => message.indexOf(textQuery.text) !== -1)[0]
-		console.log(foundTextQuery)
 		const symbol = foundTextQuery ? foundTextQuery.parse(message, foundTextQuery.text) : ""
 
 		if (foundTextQuery && symbol.length) {
